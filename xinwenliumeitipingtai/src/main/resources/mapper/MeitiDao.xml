@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.MeitiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.meiti_name as meitiName
+        ,a.meiti_photo as meitiPhoto
+        ,a.sex_types as sexTypes
+        ,a.meiti_phone as meitiPhone
+        ,a.meiti_email as meitiEmail
+        ,a.meiti_delete as meitiDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.MeitiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM meiti  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.meitiName != '' and params.meitiName != null and params.meitiName != 'null' ">
+                and a.meiti_name like CONCAT('%',#{params.meitiName},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.meitiPhone != '' and params.meitiPhone != null and params.meitiPhone != 'null' ">
+                and a.meiti_phone like CONCAT('%',#{params.meitiPhone},'%')
+            </if>
+            <if test=" params.meitiEmail != '' and params.meitiEmail != null and params.meitiEmail != 'null' ">
+                and a.meiti_email like CONCAT('%',#{params.meitiEmail},'%')
+            </if>
+            <if test="params.meitiDeleteStart != null and params.meitiDeleteStart != ''">
+                <![CDATA[  and a.meiti_delete >= #{params.meitiDeleteStart}   ]]>
+            </if>
+            <if test="params.meitiDeleteEnd != null and params.meitiDeleteEnd != ''">
+                <![CDATA[  and a.meiti_delete <= #{params.meitiDeleteEnd}   ]]>
+            </if>
+             <if test="params.meitiDelete != null and params.meitiDelete != ''">
+                and a.meiti_delete = #{params.meitiDelete}
+             </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
